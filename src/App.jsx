@@ -9,6 +9,22 @@ function App() {
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
   const [consultaRealizada, setConsultaRealizada] = useState(false);
+  const [sesionIniciada, setSesionIniciada] = useState(false);
+  const [usuario, setUsuario] = useState("");
+  const [contrasena, setContrasena] = useState("");
+  const [errorLogin, setErrorLogin] = useState("");
+
+  function iniciarSesion(event) {
+    event.preventDefault();
+
+    if (!usuario.trim() || !contrasena.trim()) {
+      setErrorLogin("Ingresa tu usuario y contraseña para continuar.");
+      return;
+    }
+
+    setErrorLogin("");
+    setSesionIniciada(true);
+  }
 
   async function consultarBaseDatos() {
     setCargando(true);
@@ -132,6 +148,68 @@ function App() {
     style: "currency",
     currency: "USD",
   });
+
+  if (!sesionIniciada) {
+    return (
+      <main className="login-contenedor">
+        <section className="login-presentacion">
+          <p className="etiqueta">Sistema financiero</p>
+          <h1>Todo movimiento, bajo control.</h1>
+          <p>
+            Consulta información de cuentas desde un espacio claro y privado
+            para tu equipo.
+          </p>
+          <span className="login-linea" />
+          <small>Consulta de movimientos · Acceso interno</small>
+        </section>
+
+        <section className="login-panel">
+          <div className="login-marca">
+            <span className="marca-icono">S</span>
+            <span>Consulta</span>
+          </div>
+
+          <div className="login-titulo">
+            <p className="sobretitulo">Bienvenido</p>
+            <h2>Inicia sesión</h2>
+            <p>Ingresa tus datos para acceder al panel.</p>
+          </div>
+
+          <form className="login-formulario" onSubmit={iniciarSesion}>
+            <label htmlFor="usuario">Usuario o correo</label>
+            <input
+              id="usuario"
+              type="text"
+              value={usuario}
+              onChange={(event) => setUsuario(event.target.value)}
+              placeholder="nombre@empresa.com"
+              autoComplete="username"
+            />
+
+            <label htmlFor="contrasena">Contraseña</label>
+            <input
+              id="contrasena"
+              type="password"
+              value={contrasena}
+              onChange={(event) => setContrasena(event.target.value)}
+              placeholder="Ingresa tu contraseña"
+              autoComplete="current-password"
+            />
+
+            {errorLogin && <p className="error-login">{errorLogin}</p>}
+
+            <button className="boton-login" type="submit">
+              Entrar al panel <span aria-hidden="true">-&gt;</span>
+            </button>
+          </form>
+
+          <p className="aviso-demo">
+            Modo demostración: no se validan ni almacenan credenciales reales.
+          </p>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="contenedor">
