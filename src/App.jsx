@@ -3,17 +3,21 @@ import Papa from "papaparse";
 import "./App.css";
 
 function App() {
+  // Datos y estado de la consulta de movimientos.
   const [registros, setRegistros] = useState([]);
   const [numeroCuenta, setNumeroCuenta] = useState("");
   const [nombreArchivo, setNombreArchivo] = useState("");
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
   const [consultaRealizada, setConsultaRealizada] = useState(false);
+
+  // Estado temporal del acceso demostrativo.
   const [sesionIniciada, setSesionIniciada] = useState(false);
   const [usuario, setUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [errorLogin, setErrorLogin] = useState("");
 
+  // Valida que el formulario demo tenga datos antes de mostrar el panel.
   function iniciarSesion(event) {
     event.preventDefault();
 
@@ -26,6 +30,7 @@ function App() {
     setSesionIniciada(true);
   }
 
+  // Consulta los movimientos en la API y reemplaza cualquier CSV cargado.
   async function consultarBaseDatos() {
     setCargando(true);
     setError("");
@@ -51,6 +56,7 @@ function App() {
     }
   }
 
+  // Lee un CSV local, valida sus columnas y conserva solo filas utilizables.
   function cargarCSV(event) {
     const archivo = event.target.files?.[0];
 
@@ -94,9 +100,9 @@ function App() {
           return;
         }
 
+        // Se conserva la cuenta como texto para no perder ceros iniciales.
         const filasValidas = data
           .map((fila) => ({
-            // Se conserva como texto para no perder ceros iniciales.
             cuenta: String(fila.cuenta ?? "").trim(),
             monto: Number(
               String(fila.monto ?? "")
@@ -127,6 +133,7 @@ function App() {
     });
   }
 
+  // Filtra en memoria los resultados del CSV según la cuenta escrita.
   const resultados = useMemo(() => {
     const busqueda = numeroCuenta.trim().toLowerCase();
 
@@ -139,16 +146,19 @@ function App() {
     );
   }, [registros, numeroCuenta]);
 
+  // Calcula el total que se muestra en el resumen.
   const totalMonto = resultados.reduce(
     (total, registro) => total + registro.monto,
     0
   );
 
+  // Formatea los montos con la moneda usada por la interfaz.
   const formatoMoneda = new Intl.NumberFormat("es-EC", {
     style: "currency",
     currency: "USD",
   });
 
+  // Vista de acceso temporal mientras no exista autenticación real.
   if (!sesionIniciada) {
     return (
       <main className="login-contenedor">
@@ -211,6 +221,7 @@ function App() {
     );
   }
 
+  // Vista principal para consultar movimientos.
   return (
     <main className="contenedor">
       <section className="encabezado">
