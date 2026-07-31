@@ -1,16 +1,23 @@
-# React + Vite
+# Sistema de consulta
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicacion React para consultar movimientos almacenados en MySQL.
 
-Currently, two official plugins are available:
+## Configuracion
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Instala las dependencias con `npm install`.
+2. Ejecuta `database/schema.sql` en MySQL.
+3. Crea `.env` en la raiz a partir de `.env.example` y completa tus credenciales.
 
-## React Compiler
+## Desarrollo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Levanta la API y Vite con:
 
-## Expanding the ESLint configuration
+```bash
+npm run dev:full
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+La aplicacion queda disponible en `http://localhost:5173`.
+
+La API expone `GET /api/health` para comprobar MySQL y `GET /api/movimientos?cuenta=001234` para buscar movimientos.
+
+Las credenciales permanecen en `.env`, que esta excluido de Git.

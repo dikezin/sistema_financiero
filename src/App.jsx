@@ -7,6 +7,33 @@ function App() {
   const [numeroCuenta, setNumeroCuenta] = useState("");
   const [nombreArchivo, setNombreArchivo] = useState("");
   const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
+  const [consultaRealizada, setConsultaRealizada] = useState(false);
+
+  async function consultarBaseDatos() {
+    setCargando(true);
+    setError("");
+    setConsultaRealizada(true);
+
+    try {
+      const respuesta = await fetch(
+        `/api/movimientos?cuenta=${encodeURIComponent(numeroCuenta.trim())}`
+      );
+      const datos = await respuesta.json();
+
+      if (!respuesta.ok) {
+        throw new Error(datos.error ?? "No se pudo consultar la base de datos.");
+      }
+
+      setRegistros(datos);
+      setNombreArchivo("");
+    } catch (problema) {
+      setRegistros([]);
+      setError(problema.message);
+    } finally {
+      setCargando(false);
+    }
+  }
 
   function cargarCSV(event) {
     const archivo = event.target.files?.[0];
@@ -15,6 +42,7 @@ function App() {
     setNumeroCuenta("");
     setNombreArchivo("");
     setError("");
+    setConsultaRealizada(false);
 
     if (!archivo) return;
 
@@ -111,13 +139,33 @@ function App() {
         <p className="etiqueta">Consulta de movimientos</p>
         <h1>Buscar información por cuenta</h1>
         <p>
-          Sube un archivo CSV con las columnas cuenta, monto y fecha.
+          Consulta los movimientos almacenados en MySQL o carga un CSV local.
         </p>
       </section>
 
       <section className="panel">
+        <label className="titulo-campo" htmlFor="cuenta">
+          Número de cuenta
+        </label>
+
+        <input
+          id="cuenta"
+          className="buscador"
+          type="text"
+          value={numeroCuenta}
+          onChange={(event) => setNumeroCuenta(event.target.value)}
+          placeholder="Ejemplo: 0012345678"
+          autoComplete="off"
+        />
+
+        <button type="button" onClick={consultarBaseDatos} disabled={cargando}>
+          {cargando ? "Consultando..." : "Consultar base de datos"}
+        </button>
+      </section>
+
+      <section className="panel">
         <label className="titulo-campo" htmlFor="archivo">
-          Archivo CSV
+          O cargar un archivo CSV
         </label>
 
         <input
@@ -136,24 +184,12 @@ function App() {
 
       {error && <p className="error">{error}</p>}
 
+      {consultaRealizada && registros.length === 0 && !error && (
+        <p>No existen registros para esa cuenta.</p>
+      )}
+
       {registros.length > 0 && (
         <>
-          <section className="panel">
-            <label className="titulo-campo" htmlFor="cuenta">
-              Número de cuenta
-            </label>
-
-            <input
-              id="cuenta"
-              className="buscador"
-              type="text"
-              value={numeroCuenta}
-              onChange={(event) => setNumeroCuenta(event.target.value)}
-              placeholder="Ejemplo: 0012345678"
-              autoComplete="off"
-            />
-          </section>
-
           <section className="resumen">
             <article>
               <span>Registros encontrados</span>
