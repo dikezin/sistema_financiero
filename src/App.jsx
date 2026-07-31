@@ -136,7 +136,10 @@ function App() {
   return (
     <main className="contenedor">
       <section className="encabezado">
-        <p className="etiqueta">Consulta de movimientos</p>
+        <div className="encabezado-meta">
+          <p className="etiqueta">Consulta de movimientos</p>
+          <span className="estado">Panel operativo</span>
+        </div>
         <h1>Buscar información por cuenta</h1>
         <p>
           Consulta los movimientos almacenados en MySQL o carga un CSV local.
@@ -158,7 +161,12 @@ function App() {
           autoComplete="off"
         />
 
-        <button type="button" onClick={consultarBaseDatos} disabled={cargando}>
+        <button
+          className="boton-principal"
+          type="button"
+          onClick={consultarBaseDatos}
+          disabled={cargando}
+        >
           {cargando ? "Consultando..." : "Consultar base de datos"}
         </button>
       </section>
@@ -170,6 +178,7 @@ function App() {
 
         <input
           id="archivo"
+          className="selector-archivo"
           type="file"
           accept=".csv,text/csv"
           onChange={cargarCSV}
@@ -185,7 +194,10 @@ function App() {
       {error && <p className="error">{error}</p>}
 
       {consultaRealizada && registros.length === 0 && !error && (
-        <p>No existen registros para esa cuenta.</p>
+        <section className="estado-vacio">
+          <strong>No encontramos movimientos</strong>
+          <span>Prueba con otra cuenta o revisa los datos cargados.</span>
+        </section>
       )}
 
       {registros.length > 0 && (
@@ -203,7 +215,13 @@ function App() {
           </section>
 
           <section className="panel">
-            <h2>Resultados</h2>
+            <div className="seccion-titulo">
+              <div>
+                <p className="sobretitulo">Detalle de consulta</p>
+                <h2>Resultados</h2>
+              </div>
+              <span className="contador">{resultados.length} filas</span>
+            </div>
 
             {resultados.length === 0 ? (
               <p>No existen registros para esa cuenta.</p>
